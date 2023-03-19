@@ -2,12 +2,17 @@ import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import Nav from './components/Nav'
 import routes from './config/routes'
 import AuthChecker from './auth/AuthChecker'
+import { useState } from 'react'
 
 function App() {
+  const [ loggedIn, setLoggedIn ] = useState(false)
 
   return (
     <BrowserRouter>
-      <Nav />
+      <Nav 
+        loggedIn={loggedIn}
+        setLoggedIn={setLoggedIn}
+      />
       <Routes>
         { routes.map((route, index) => (
           <Route
@@ -15,7 +20,7 @@ function App() {
             path={route.path}
             element={
               route.protected? (
-                <AuthChecker>
+                <AuthChecker setLoggedIn={setLoggedIn}>
                   <route.component />
                 </AuthChecker>
               ) : (

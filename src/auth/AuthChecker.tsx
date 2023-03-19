@@ -1,29 +1,39 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { signInWithPopup } from "firebase/auth"
+import { getRedirectResult, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from "firebase/auth"
 import { auth, Providers } from '../config/firebase'
 
 interface Props {
-    children: React.ReactNode
+    children: React.ReactNode,
+    setLoggedIn: (value: boolean) => void
 }
 
-const AuthChecker = ({children}: Props) => {
+const AuthChecker = (prop: Props) => {
 
     const navigate = useNavigate();
-    // This will just check if the user is logged in, if so, it return the children
-    // (which are passed as props - it's just whatever component is either protected
-    // or not)
-    // Otherwise it send them to the login route
 
     useEffect(() => {
         if(!auth.currentUser) {
             navigate('../')
+
+            Providers.google.setCustomParameters({
+                prompt: 'select_account'
+            });
+
             signInWithPopup(auth, Providers.google)
+            .then((result) => {
+                console.log('Login Succesfull')
+                console.log(result)
+                prop.setLoggedIn(true)
+            }).catch((error) => {
+                console.log('Login Failed')
+                console.log(error)
+            });
         }
     }, [])
 
     return (
-        <>{children}</>
+        <>{prop.children}</>
     )
 }
 

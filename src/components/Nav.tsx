@@ -1,8 +1,14 @@
 import { useState } from "react"
 import Button from "./Button"
 import { Link } from 'react-router-dom'
+import { googleSignout } from "../config/firebase"
 
-function Nav() {
+interface Props {
+    loggedIn: boolean,
+    setLoggedIn: (value: boolean) => void
+}
+
+function Nav(prop: Props) {
     const [ isVisible, setIsVisible ] = useState(false)
 
     function toggleMenu() {
@@ -41,6 +47,21 @@ function Nav() {
                                 Dashboard
                             </Link>
                         </Button>
+                        {
+                            prop.loggedIn? (
+                                <Button className="py-3 px-1 text-gray-400 hover:text-white">
+                                    <Link to='/' onClick={() => {
+                                        googleSignout(prop.setLoggedIn)
+                                        toggleMenu()
+                                    }}>
+                                        Sign Out
+                                    </Link>
+                                </Button>
+                            ) : (
+                                <></>
+                            )
+                        }
+                        
                     </div>
                 </div>
             ) : (
