@@ -1,19 +1,33 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "./Button"
 import { Link } from 'react-router-dom'
-import { googleSignout } from "../config/firebase"
+import { auth, Providers } from '../config/firebase'
+import { signInWithPopup, signOut } from 'firebase/auth'
 
 interface Props {
-    loggedIn: boolean,
-    setLoggedIn: (value: boolean) => void
+    loggedIn: boolean
 }
 
-function Nav(prop: Props) {
+function Nav({ loggedIn }: Props) {
     const [ isVisible, setIsVisible ] = useState(false)
 
     function toggleMenu() {
         setIsVisible(!isVisible)
     }
+
+    function googleSignOut() {
+        signOut(auth)
+        toggleMenu()
+     }
+
+     const googleSignIn = async () => {
+        const response = await signInWithPopup(auth, Providers.google)
+        if(response.user) {
+            location.reload()
+        }
+    }
+
+    const currentUser = loggedIn
 
     return (
         <nav className='flex flex-row items-center justify-between flex-wrap w-full fixed p-3 bg-[#3C3549] text-white z-10'>
@@ -48,17 +62,18 @@ function Nav(prop: Props) {
                             </Link>
                         </Button>
                         {
-                            prop.loggedIn? (
+                            !currentUser? (
                                 <Button className="py-3 px-1 text-gray-400 hover:text-white">
-                                    <Link to='/' onClick={() => {
-                                        googleSignout(prop.setLoggedIn)
-                                        toggleMenu()
-                                    }}>
-                                        Sign Out
+                                    <Link to='/' onClick={googleSignIn}>
+                                    Login
                                     </Link>
                                 </Button>
                             ) : (
-                                <></>
+                                <Button className="py-3 px-1 text-gray-400 hover:text-white">
+                                    <Link to='/' onClick={googleSignOut}>
+                                        Sign Out
+                                    </Link>
+                                </Button>
                             )
                         }
                         

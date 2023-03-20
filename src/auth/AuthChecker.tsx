@@ -1,39 +1,32 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { getRedirectResult, signInWithPopup, signInWithRedirect, GoogleAuthProvider } from "firebase/auth"
+import { getRedirectResult, signInWithPopup, signInWithRedirect, onAuthStateChanged } from "firebase/auth"
 import { auth, Providers } from '../config/firebase'
 
 interface Props {
-    children: React.ReactNode,
-    setLoggedIn: (value: boolean) => void
+    children: React.ReactNode
 }
 
-const AuthChecker = (prop: Props) => {
+const AuthChecker = ({children}: Props) => {
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!auth.currentUser) {
-            navigate('../')
 
-            Providers.google.setCustomParameters({
-                prompt: 'select_account'
-            });
+        // if(!auth.currentUser) {
+        //     navigate('../')
+        
+        //     Providers.google.setCustomParameters({
+        //         prompt: 'select_account'
+        //     });
 
-            signInWithPopup(auth, Providers.google)
-            .then((result) => {
-                console.log('Login Succesfull')
-                console.log(result)
-                prop.setLoggedIn(true)
-            }).catch((error) => {
-                console.log('Login Failed')
-                console.log(error)
-            });
-        }
+        //     signInWithPopup(auth, Providers.google)
+        // }
+
     }, [])
 
     return (
-        <>{prop.children}</>
+        <>{children}</>
     )
 }
 
